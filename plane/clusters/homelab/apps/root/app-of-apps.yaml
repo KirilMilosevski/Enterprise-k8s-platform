@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/KirilMilosevski/Plane-GitOps-Kubernetes.git
     targetRevision: main
-    path: clusters/homelab/apps
+    path: plane/clusters/homelab/apps
     directory:
       recurse: true
   destination:
