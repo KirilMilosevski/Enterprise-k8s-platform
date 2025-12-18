@@ -5,23 +5,18 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  ignoreDifferences:
-    - group: batch
-      kind: job
-      jsonPointers:
-        - /spec/template
+
   source:
-    repoURL: https://helm.plane.so/
-    chart: plane-ce
+    repoURL: https://helm.plane.so
+    chart: plane
     targetRevision: 1.4.1
     helm:
-       values: |
+      values: |
         ingress:
           enabled: true
-          ingressClass: "traefik"
-          classname: traefik
+          className: traefik
 
-            hosts:
+          hosts:
             - host: plane.homelab
               paths:
                 - path: /
@@ -66,31 +61,29 @@ spec:
                     name: plane-app-minio
                     port: 9000
 
+        # keep storage classes etc below if you already have them
         postgres:
-          storageClass: "local-path"
-
+          storageClass: local-path
         redis:
-          storageClass: "local-path"
-
+          storageClass: local-path
         minio:
-          storageClass: "local-path"
+          storageClass: local-path
 
   destination:
     server: https://kubernetes.default.svc
     namespace: plane
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-
     syncOptions:
       - Replace=true
       - PruneLast=true
-      - ApplyOutOfSyncOnly=true
 
-    ignoreDifferences:
-      - group: batch
-        kind: Job
-        jqPathExpressions:
-          - .spec.template
+  ignoreDifferences:
+    - group: batch
+      kind: Job
+      jqPathExpressions:
+        - .spec.template
 
