@@ -6,68 +6,30 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://helm.plane.so
-    chart: plane-ce
-    targetRevision: 1.4.1
-    helm:
-      values: |
-        ingress:
-          enabled: true
-          className: traefik
+  sources:
+    # Source 1: Plane Helm chart (NO ingress here)
+    - repoURL: https://helm.plane.so
+      chart: plane-ce
+      targetRevision: ">=1.0.0"
+      helm:
+        values: |
+          ingress:
+            enabled: false
+            appHost: ""
+            minioHost: ""
+            ingressClass: ""
 
-          hosts:
-            - host: plane.homelab
-              paths:
-                - path: /
-                  pathType: Prefix
-                  service:
-                    name: plane-app-web
-                    port: 3000
+          postgres:
+            storageClass: local-path
+          redis:
+            storageClass: local-path
+          minio:
+            storageClass: local-path
 
-                - path: /god-mode
-                  pathType: Prefix
-                  service:
-                    name: plane-app-admin
-                    port: 3000
-
-                - path: /spaces
-                  pathType: Prefix
-                  service:
-                    name: plane-app-space
-                    port: 3000
-
-                - path: /live
-                  pathType: Prefix
-                  service:
-                    name: plane-app-live
-                    port: 3000
-
-                - path: /api
-                  pathType: Prefix
-                  service:
-                    name: plane-app-api
-                    port: 8000
-
-                - path: /auth
-                  pathType: Prefix
-                  service:
-                    name: plane-app-api
-                    port: 8000
-
-                - path: /uploads
-                  pathType: Prefix
-                  service:
-                    name: plane-app-minio
-                    port: 9000
-
-        # keep storage classes etc below if you already have them
-        postgres:
-          storageClass: local-path
-        redis:
-          storageClass: local-path
-        minio:
-          storageClass: local-path
+    # Source 2: Your Git repo (custom ingress + extras)
+    - repoURL: https://github.com/KirilMilosevski/Plane-GitOps-Kubernetes.git
+      targetRevision: main
+      path: plane/clusters/homelab/ingress
 
   destination:
     server: https://kubernetes.default.svc
@@ -78,7 +40,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - Replace=true
+      - ApplyOutOSyncOnly=true
       - PruneLast=true
 
   ignoreDifferences:
@@ -86,4 +48,5 @@ spec:
       kind: Job
       jqPathExpressions:
         - .spec.template
+        - .spec.template.metadata.labels
 

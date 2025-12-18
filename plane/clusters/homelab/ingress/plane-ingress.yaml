@@ -1,15 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: plane-ingress
+  name: plane-traefik-ingress
   namespace: plane
 spec:
-  ingressClassName: traefik   # or nginx
+  ingressClassName: traefik
   rules:
     - host: plane.homelab
       http:
         paths:
-
           - path: /
             pathType: Prefix
             backend:
@@ -17,15 +16,6 @@ spec:
                 name: plane-app-web
                 port:
                   number: 3000
-
-          - path: /spaces
-            pathType: Prefix
-            backend:
-              service:
-                name: plane-app-space
-                port:
-                  number: 3000
-
           - path: /god-mode
             pathType: Prefix
             backend:
@@ -33,7 +23,13 @@ spec:
                 name: plane-app-admin
                 port:
                   number: 3000
-
+          - path: /spaces
+            pathType: Prefix
+            backend:
+              service:
+                name: plane-app-space
+                port:
+                  number: 3000
           - path: /live
             pathType: Prefix
             backend:
@@ -41,7 +37,6 @@ spec:
                 name: plane-app-live
                 port:
                   number: 3000
-
           - path: /api
             pathType: Prefix
             backend:
@@ -49,7 +44,6 @@ spec:
                 name: plane-app-api
                 port:
                   number: 8000
-
           - path: /auth
             pathType: Prefix
             backend:
@@ -57,7 +51,6 @@ spec:
                 name: plane-app-api
                 port:
                   number: 8000
-
           - path: /uploads
             pathType: Prefix
             backend:
