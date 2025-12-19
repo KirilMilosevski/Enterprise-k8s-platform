@@ -13,49 +13,55 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: plane-app-web
+                name: plane-web
                 port:
                   number: 3000
-          - path: /god-mode
+
+          - path: /god-mode/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-admin
+                name: plane-admin
                 port:
                   number: 3000
-          - path: /spaces
+
+          - path: /spaces/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-space
+                name: plane-space
                 port:
                   number: 3000
-          - path: /live
+
+          - path: /live/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-live
+                name: plane-live
                 port:
                   number: 3000
-          - path: /api
+
+          - path: /api/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-api
+                name: plane-api
                 port:
                   number: 8000
-          - path: /auth
+
+          - path: /auth/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-api
+                name: plane-api
                 port:
                   number: 8000
-          - path: /uploads
+
+          - path: /uploads/
             pathType: Prefix
             backend:
               service:
-                name: plane-app-minio
+                name: plane-minio
                 port:
                   number: 9000
 

@@ -10,7 +10,7 @@ spec:
     # Source 1: Plane Helm chart (NO ingress here)
     - repoURL: https://helm.plane.so
       chart: plane-ce
-      targetRevision: ">=1.0.0"
+      targetRevision: "1.4.1"
       helm:
         values: |
           ingress:
@@ -18,6 +18,13 @@ spec:
             appHost: ""
             minioHost: ""
             ingressClass: ""
+
+          # ✅ Plane public URL + CORS (these are app config, not ingress routing)
+          # The exact nesting depends on the chart, but these keys must end up
+          # as env vars on the API pod.
+        
+          env:
+            cors_allowed_origins: "http://plane.homelab"
 
           postgres:
             storageClass: local-path
@@ -40,7 +47,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - ApplyOutOSyncOnly=true
+      - ApplyOutOfSyncOnly=true
       - PruneLast=true
 
   ignoreDifferences:
