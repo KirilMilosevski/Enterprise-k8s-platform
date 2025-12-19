@@ -25,7 +25,7 @@ spec:
         
           env:
             cors_allowed_origins: "http://plane.homelab"
-            NEXT_PUBLIC_DEPLOY_URL: "http://plane.homelab"
+            web_url: "http://plane.homelab"
 
           postgres:
             storageClass: local-path
