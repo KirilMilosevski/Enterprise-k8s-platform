@@ -12,7 +12,7 @@ spec:
     helm:
       values: |
         config:
-          # FULL OVERRIDE so we don't inherit the chart's default "scrape everything"
+          # FULL override – no default scraping
           file: |
             server:
               http_listen_port: 3101
@@ -25,21 +25,29 @@ spec:
               - url: http://loki.monitoring.svc:3100/loki/api/v1/push
 
             scrape_configs:
-              - job_name: kubernetes-pods-one-namespace
+              - job_name: plane-api-and-web-only
                 kubernetes_sd_configs:
                   - role: pod
                     namespaces:
                       names:
-                        - plane   # <--- CHANGE THIS to the ONE namespace you want
+                        - plane
 
                 pipeline_stages:
                   - cri: {}
 
                 relabel_configs:
+                  # 🔒 KEEP ONLY plane-api and plane-web
+                  - action: keep
+                    source_labels:
+                      - __meta_kubernetes_pod_label_app_name
+                    regex: plane-plane-api|plane-plane-web
+
+                  # Only running pods
                   - action: keep
                     source_labels: [__meta_kubernetes_pod_phase]
                     regex: Running
 
+                  # Useful labels in Loki
                   - action: replace
                     source_labels: [__meta_kubernetes_namespace]
                     target_label: namespace
@@ -49,10 +57,15 @@ spec:
                   - action: replace
                     source_labels: [__meta_kubernetes_pod_container_name]
                     target_label: container
-
-                  # container log path on k8s nodes
                   - action: replace
-                    source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
+                    source_labels: [__meta_kubernetes_pod_label_app_name]
+                    target_label: app
+
+                  # Container log path (k3d / containerd)
+                  - action: replace
+                    source_labels:
+                      - __meta_kubernetes_pod_uid
+                      - __meta_kubernetes_pod_container_name
                     separator: /
                     target_label: __path__
                     replacement: /var/log/pods/*$1/*.log
