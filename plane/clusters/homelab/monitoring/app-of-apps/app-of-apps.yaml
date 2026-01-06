@@ -9,10 +9,10 @@ spec:
   source:
     repoURL: https://github.com/KirilMilosevski/Plane-GitOps-Kubernetes.git
     targetRevision: main
-    path: monitoring
+    path: plane/clusters/homelab/monitoring
 
     directory:
-      recurse: true
+      recurse: false
 
   destination:
     server: https://kubernetes.default.svc
@@ -21,4 +21,5 @@ spec:
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true  
+      selfHeal: true
+

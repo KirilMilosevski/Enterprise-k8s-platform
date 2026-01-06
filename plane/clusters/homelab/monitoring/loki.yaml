@@ -11,6 +11,14 @@ spec:
     targetRevision: "6.*"
     helm:
       values: |
+        deploymentMode: SingleBinary
+
+        write:
+          replicas: 0
+        read:
+          replicas: 0
+        backend:
+          replicas: 0
         loki:
           auth_enabled: false
           commonConfig:
