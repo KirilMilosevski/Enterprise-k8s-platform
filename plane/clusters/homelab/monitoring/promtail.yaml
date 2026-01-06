@@ -12,15 +12,19 @@ spec:
     helm:
       values: |
         config:
-          clients:
-            - url: http://loki.monitoring.svc:3100/loki/api/v1/push
+          # ✅ FULL OVERRIDE (this prevents the chart's default "scrape everything" config)
+          file: |
+            server:
+              http_listen_port: 3101
+              grpc_listen_port: 0
 
-          snippets:
-            pipelineStages:
-              - cri: {}
+            positions:
+              filename: /run/promtail/positions.yaml
 
-            # 🔥 HARD LIMIT (REAL FIX): only discover pods in these namespaces
-            scrapeConfigs: |
+            clients:
+              - url: http://loki.monitoring.svc:3100/loki/api/v1/push
+
+            scrape_configs:
               - job_name: kubernetes-pods-limited
                 kubernetes_sd_configs:
                   - role: pod
@@ -30,13 +34,14 @@ spec:
                         - student-api
                         - argocd
 
+                pipeline_stages:
+                  - cri: {}
+
                 relabel_configs:
-                  # keep only running pods
                   - action: keep
                     source_labels: [__meta_kubernetes_pod_phase]
                     regex: Running
 
-                  # label basics (optional but nice)
                   - action: replace
                     source_labels: [__meta_kubernetes_namespace]
                     target_label: namespace
@@ -47,17 +52,17 @@ spec:
                     source_labels: [__meta_kubernetes_pod_container_name]
                     target_label: container
 
-                  # point promtail to the container log files
+                  # container log path on k8s nodes
                   - action: replace
                     source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
                     separator: /
                     target_label: __path__
                     replacement: /var/log/pods/*$1/*.log
 
+        # keep chart defaults for mounts/daemonset unless you changed them elsewhere
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
-
   syncPolicy:
     automated:
       prune: true
