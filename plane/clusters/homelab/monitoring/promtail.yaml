@@ -3,10 +3,10 @@ kind: Application
 metadata:
   name: monitoring-promtail
   namespace: argocd
-spec: 
+spec:
   project: default
   source:
-    repoUrl: https://grafana.github.io/helm-charts
+    repoURL: https://grafana.github.io/helm-charts
     chart: promtail
     targetRevision: "6.*"
     helm:
@@ -28,3 +28,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+

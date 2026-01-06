@@ -13,44 +13,45 @@ spec:
       values: |
         grafana:
           enabled: true
-          adminPassword: "admin"
+          adminPassword: "admin"   # change later
           service:
             type: ClusterIP
 
-      prometheus:
-        prometheusSpec:
-          retention: 7d
-          storageSpec:
-            volumeClaimTemplate:
-              spec:
-                accessModes: ["ReadWriteOnce"]
-                resources:
-                  requests:
-                    storage: 10Gi
+        prometheus:
+          prometheusSpec:
+            retention: 7d
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
 
-      alertManager:
-        alertManagerSpec:
-          storage:
-            VolumeClaimTemplate:
-              spec:
-                accessModes: ["ReadWriteOnce"]
-                resources:
-                  request:
-                    storage: 2Gi
+        alertmanager:
+          alertmanagerSpec:
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 2Gi
 
-      kubeControllerManager:
-        enabled: true
-      kubeScheduler:
-        enabled: false
-      kubeEtcd:
-        enabled: false
+        # k3s-friendly (avoid noisy/broken targets)
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
 
   syncPolicy:
-    automated: 
+    automated:
       prune: true
       selfHeal: true
     syncOptions:
