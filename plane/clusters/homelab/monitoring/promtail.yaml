@@ -20,8 +20,6 @@ spec:
             pipelineStages:
               - cri: {}
 
-        # 🔥 THIS is the important part:
-        # Override the chart's default scrape configs with ONLY this job.
         scrapeConfigs:
           - job_name: plane-api-and-web-only
             kubernetes_sd_configs:
@@ -49,6 +47,10 @@ spec:
         # TEMP: print the loaded config so we can confirm it’s using ONLY our scrapeConfigs
         extraArgs:
           - -print-config-stderr
+
+        nodeSelector:
+          promtail: enabled
+
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
