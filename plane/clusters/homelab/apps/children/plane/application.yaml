@@ -39,8 +39,8 @@ spec:
           minio:
             storageClass: local-path
 
-    # Source 2: Your Git repo (custom ingress + extras)
-    - repoURL: https://github.com/KirilMilosevski/Plane-GitOps-Kubernetes.git
+    
+    - repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
       targetRevision: main
       path: plane/clusters/homelab/ingress
 
