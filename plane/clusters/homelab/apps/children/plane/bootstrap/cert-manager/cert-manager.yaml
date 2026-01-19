@@ -13,6 +13,7 @@ spec:
       releaseNme: cert-manager
       values: |
         installCRDS: true
+      installCRD: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
