@@ -1,4 +1,4 @@
-# Homelab Plane GitOps Cluster
+# Platform for Plane (GitOps, Observability, CI/CD)
 
 This directory defines a full homelab Kubernetes environment for running **Plane (Ticket managment system)** with GitOps, TLS, ingress, Cloudflare tunnel access, and observability.
 
