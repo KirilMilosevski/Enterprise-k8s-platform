@@ -1,23 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cloudflared
+  name: homelab-apps
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
     targetRevision: main
-    path: plane/clusters/homelab/cloudflared
+    path: apps
     directory:
       recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: cloudflare
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-

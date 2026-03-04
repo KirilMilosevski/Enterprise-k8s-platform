@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
     targetRevision: main
-    path: plane/clusters/homelab/ingress
+    path: ingress
     directory:
       recurse: true
   destination:

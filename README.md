@@ -1,6 +1,6 @@
 # Platform for Plane (GitOps, Observability, CI/CD)
 
-This directory defines a full homelab Kubernetes environment for running **Plane (Ticket managment system)** with GitOps, TLS, ingress, Cloudflare tunnel access, and observability.
+This directory defines a full homelab Kubernetes environment for running **Plane CE** with GitOps, TLS, ingress, Cloudflare tunnel access, and observability.
 
 It combines:
 - `Terraform` for Day-0 bootstrap (k3d cluster + Argo CD install + root app apply)
@@ -150,6 +150,15 @@ Update hardcoded domain/repo values before initial deploy:
   - Multiple files under `apps/` and `monitoring/app-of-apps/`
 
 ## Bootstrap and Deploy
+
+From this directory:
+
+```bash
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
 
 What happens during apply:
 
@@ -330,7 +339,14 @@ terraform destroy
 This triggers k3d cluster deletion via Terraform `local-exec` destroy provisioner.
 
 
+## Notes for Contributors
+
+- Keep all environment-specific values explicit and documented in this README.
+- If you change chart versions or hostnames, update both manifests and this file.
+- Validate Argo app sync status and certificate issuance before merging infra changes.
+
 ## Project Status
 
 - CI/CD pipeline work is currently in progress.
-- Additional observability to be added (Prometheus, Grafana, Loki, and Promtail).
+- Observability has been added (Prometheus, Grafana, Loki, and Promtail).
+- Alerting/alarm capabilities are also included through the monitoring stack.

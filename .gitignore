@@ -1,0 +1,36 @@
+# Terraform working directory
+**/.terraform/*
+
+# Terraform state files (can contain secrets)
+*.tfstate
+*.tfstate.*
+
+# Terraform crash logs and plans
+crash.log
+*.tfplan
+
+# Terraform override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local Terraform variable files (often contain credentials)
+*.tfvars
+*.tfvars.json
+
+# Terraform CLI config files
+.terraformrc
+terraform.rc
+
+# Local secret files (keep encrypted SealedSecrets in git)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/*.dec.yaml
+secrets/*.decrypted.yaml
+secrets/*.plain.yaml
+secrets/*.local.yaml

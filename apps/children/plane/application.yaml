@@ -39,7 +39,7 @@ spec:
     
     - repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
       targetRevision: main
-      path: plane/clusters/homelab/ingress
+      path: ingress
 
   destination:
     server: https://kubernetes.default.svc
