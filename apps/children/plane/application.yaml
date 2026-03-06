@@ -21,8 +21,8 @@ spec:
 
         
           env:
-            cors_allowed_origins: "http://plane.kiril.shop"
-            web_url: "http://plane.kiril.shop"
+            cors_allowed_origins: "https://plane.kiril.shop"
+            web_url: "https://plane.kiril.shop"
           
             EMAIL_ENABLED: "false"
             ENABLE_EMAIL_PASSWORD_LOGIN: "true"

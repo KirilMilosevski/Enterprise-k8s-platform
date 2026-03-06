@@ -80,6 +80,7 @@ Control path:
 │   └── traefikservicemonitor.yaml
 ├── namespaces/plane.yaml                         # Explicit Plane namespace manifest
 ├── secrets/cloudflared-token.sealedsecret.yaml   # SealedSecret for tunnel token
+├── scripts/generate-sealed-secrets.sh            # Regenerates SealedSecrets from local env vars
 └── terraform/                                    # Day-0 bootstrap and lifecycle
 ```
 
@@ -101,40 +102,48 @@ External prerequisites:
 - Cloudflare API token with DNS edit permissions
 - Cloudflare Tunnel token (for `cloudflared`)
 
-## Before First Apply
+## Secrets Setup
 
-### 1) Set Cloudflare API token secret for cert-manager
+The repo is wired so repo-managed credentials are expected to be backed by `SealedSecret` manifests instead of plaintext values or one-off manual `kubectl create secret` commands.
 
-`ClusterIssuer` resources reference this secret:
-- Name: `cloudflare-api-token-secret`
-- Namespace: `cert-manager`
-- Key: `api-token`
+Expected sealed inputs:
 
-Create it manually before/after bootstrap:
+- `cloudflare-api-token-secret` in namespace `cert-manager`
+- `cloudflared-token` in namespace `cloudflare`
+- `grafana-admin-credentials` in namespace `monitoring`
 
-```bash
-kubectl create secret generic cloudflare-api-token-secret \
-  -n cert-manager \
-  --from-literal=api-token='<YOUR_CLOUDFLARE_API_TOKEN>'
-```
+### 1) Bootstrap the cluster first
 
-### 2) Ensure sealed Cloudflared token is valid
-
-`secrets/cloudflared-token.sealedsecret.yaml` must contain a token encrypted against your cluster Sealed Secrets controller key.
-
-If you need to rotate it:
+The Sealed Secrets controller certificate only exists after the cluster is up. Bootstrap the cluster and let Argo CD install the `sealed-secrets` app first:
 
 ```bash
-kubectl create secret generic cloudflared-token \
-  -n cloudflare \
-  --from-literal=TUNNEL_TOKEN='<YOUR_TUNNEL_TOKEN>' \
-  --dry-run=client -o yaml \
-| kubeseal \
-  --controller-namespace kube-system \
-  --controller-name sealed-secrets \
-  --format yaml \
-> secrets/cloudflared-token.sealedsecret.yaml
+cd terraform
+terraform init
+terraform plan
+terraform apply
 ```
+
+### 2) Generate all SealedSecret manifests from local env vars
+
+```bash
+export CF_API_TOKEN='<YOUR_CLOUDFLARE_API_TOKEN>'
+export TUNNEL_TOKEN='<YOUR_TUNNEL_TOKEN>'
+export GRAFANA_ADMIN_PASSWORD='<A_STRONG_GRAFANA_PASSWORD>'
+./scripts/generate-sealed-secrets.sh
+```
+
+Optional inputs:
+
+- `GRAFANA_ADMIN_USER` defaults to `admin`
+- `KUBECONFIG` defaults to `~/.kube/config-homelab`
+
+The script writes:
+
+- `secrets/cloudflare-api-token.sealedsecret.yaml`
+- `secrets/cloudflared-token.sealedsecret.yaml`
+- `secrets/grafana-admin-credentials.sealedsecret.yaml`
+
+If you recreate the cluster and do not restore the previous Sealed Secrets controller key, regenerate every sealed secret manifest. Old ciphertext will not decrypt against a new controller key.
 
 ### 3) Optional but recommended config updates
 
@@ -158,6 +167,14 @@ cd terraform
 terraform init
 terraform plan
 terraform apply
+```
+
+After the first bootstrap, generate the sealed secret manifests and let Argo CD reconcile them:
+
+```bash
+./scripts/generate-sealed-secrets.sh
+argocd app sync homelab-apps
+argocd app sync monitoring
 ```
 
 What happens during apply:
@@ -265,14 +282,6 @@ kubectl label node <NODE_NAME> promtail=enabled
 `cert-manager/wildcard-cert.yaml` currently uses `letsencrypt-cloudflare-staging`.
 Change issuer to `letsencrypt-cloudflare-prod` after validation.
 
-### Align Plane URLs with TLS
-
-`apps/children/plane/application.yaml` currently sets:
-- `cors_allowed_origins: "http://plane.kiril.shop"`
-- `web_url: "http://plane.kiril.shop"`
-
-For HTTPS deployments, set both to `https://...`.
-
 ### Change storage class
 
 Plane chart values currently use `local-path` for Postgres/Redis/MinIO in:
@@ -298,7 +307,7 @@ Pin to a specific version tag for predictable upgrades.
 
 ### Certificate not issued
 
-1. Verify Cloudflare API secret exists in `cert-manager` namespace
+1. Verify `cloudflare-api-token-secret` exists in `cert-manager` namespace or regenerate `secrets/cloudflare-api-token.sealedsecret.yaml`
 2. Check DNS challenge events:
    ```bash
    kubectl get challenges.acme.cert-manager.io -A
@@ -320,10 +329,9 @@ Pin to a specific version tag for predictable upgrades.
 
 Current config contains intentionally simple defaults suitable for homelab bootstrap, not production:
 
-- Grafana admin password is set to `admin` in `monitoring/plg.yaml`
-- Plane URLs are HTTP in chart values while ingress uses TLS
+- Grafana admin credentials are expected from `secrets/grafana-admin-credentials.sealedsecret.yaml`
 - Plane wildcard cert uses staging issuer
-- Secrets are partly GitOps-managed (SealedSecret) and partly manual (Cloudflare API token secret)
+- Sealed secrets must be regenerated whenever the Sealed Secrets controller key changes
 
 Harden before wider exposure.
 
