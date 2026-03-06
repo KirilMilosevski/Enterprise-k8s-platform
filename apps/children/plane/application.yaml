@@ -7,7 +7,6 @@ spec:
   project: default
 
   sources:
-    # Source 1: Plane Helm chart (NO ingress here)
     - repoURL: https://helm.plane.so
       chart: plane-ce
       targetRevision: "1.4.1"
@@ -19,11 +18,10 @@ spec:
             minioHost: ""
             ingressClass: ""
 
-        
           env:
             cors_allowed_origins: "https://plane.kiril.shop"
             web_url: "https://plane.kiril.shop"
-          
+
             EMAIL_ENABLED: "false"
             ENABLE_EMAIL_PASSWORD_LOGIN: "true"
             ENABLE_MAGIC_LINK_LOGIN: "false"
@@ -36,10 +34,9 @@ spec:
           minio:
             storageClass: local-path
 
-    
     - repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
       targetRevision: main
-      path: ingress
+      path: plane-overrides
 
   destination:
     server: https://kubernetes.default.svc
@@ -59,4 +56,3 @@ spec:
       jqPathExpressions:
         - .spec.template
         - .spec.template.metadata.labels
-

@@ -58,7 +58,7 @@ Control path:
 ├── apps/
 │   ├── root/app-of-apps.yaml                     # Root app for apps/bootstrap
 │   └── children/plane/
-│       ├── application.yaml                      # Plane CE app (+ ingress source)
+│       ├── application.yaml                      # Plane CE app (chart + config override)
 │       ├── cloudflare-config.yaml                # Cloudflared app
 │       └── bootstrap/
 │           ├── traefik/                          # Traefik + Traefik CRDs + ingress app
@@ -74,10 +74,13 @@ Control path:
 │   └── argocdingress.yaml
 ├── monitoring/
 │   ├── app-of-apps/app-of-apps.yaml
-│   ├── plg.yaml                                  # kube-prometheus-stack app
+│   ├── plg.yaml                                  # kube-prometheus-stack app (chart + ServiceMonitor)
 │   ├── loki.yaml
-│   ├── promtail.yaml
-│   └── traefikservicemonitor.yaml
+│   └── promtail.yaml
+├── monitoring-resources/
+│   └── traefik/traefikservicemonitor.yaml        # Traefik ServiceMonitor managed with Prometheus app
+├── plane-overrides/
+│   └── plane-app-vars.yaml                       # HTTPS override for Plane app vars
 ├── namespaces/plane.yaml                         # Explicit Plane namespace manifest
 ├── secrets/cloudflared-token.sealedsecret.yaml   # SealedSecret for tunnel token
 ├── scripts/generate-sealed-secrets.sh            # Regenerates SealedSecrets from local env vars

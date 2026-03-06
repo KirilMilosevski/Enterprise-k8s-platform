@@ -3,6 +3,8 @@ kind: ServiceMonitor
 metadata:
   name: traefik
   namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     release: monitoring-kube-prometheus-stack
 spec:
@@ -17,5 +19,3 @@ spec:
     - port: metrics
       path: /metrics
       interval: 30s
-    
-      

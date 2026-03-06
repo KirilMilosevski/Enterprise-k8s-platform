@@ -5,49 +5,52 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: "61.*"
-    helm:
-      values: |
-        grafana:
-          enabled: true
-          admin:
-            existingSecret: grafana-admin-credentials
-            userKey: admin-user
-            passwordKey: admin-password
-          service:
-            type: ClusterIP
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: "61.*"
+      helm:
+        values: |
+          grafana:
+            enabled: true
+            admin:
+              existingSecret: grafana-admin-credentials
+              userKey: admin-user
+              passwordKey: admin-password
+            service:
+              type: ClusterIP
 
-        prometheus:
-          prometheusSpec:
-            retention: 7d
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 10Gi
+          prometheus:
+            prometheusSpec:
+              retention: 7d
+              storageSpec:
+                volumeClaimTemplate:
+                  spec:
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 10Gi
 
-        alertmanager:
-          alertmanagerSpec:
-            storage:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 2Gi
+          alertmanager:
+            alertmanagerSpec:
+              storage:
+                volumeClaimTemplate:
+                  spec:
+                    accessModes: ["ReadWriteOnce"]
+                    resources:
+                      requests:
+                        storage: 2Gi
 
-        # k3s-friendly (avoid noisy/broken targets)
-        kubeControllerManager:
-          enabled: false
-        kubeScheduler:
-          enabled: false
-        kubeEtcd:
-          enabled: false
+          # k3s-friendly (avoid noisy/broken targets)
+          kubeControllerManager:
+            enabled: false
+          kubeScheduler:
+            enabled: false
+          kubeEtcd:
+            enabled: false
+    - repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
+      targetRevision: main
+      path: monitoring-resources/traefik
 
   destination:
     server: https://kubernetes.default.svc
@@ -61,4 +64,3 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - Replace=true
-
