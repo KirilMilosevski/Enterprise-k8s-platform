@@ -177,6 +177,10 @@ argocd app sync homelab-apps
 argocd app sync monitoring
 ```
 
+If `CF_API_TOKEN`, `TUNNEL_TOKEN`, and `GRAFANA_ADMIN_PASSWORD` are already exported in the shell that runs Terraform, Terraform now auto-runs [scripts/generate-sealed-secrets.sh](/home/pashalispar/PLANE/scripts/generate-sealed-secrets.sh) after the `sealed-secrets` controller becomes available and applies the regenerated manifests directly to the cluster.
+
+This is only the runtime/bootstrap step. Argo CD still uses GitHub as its source of truth, so you must commit and push the regenerated files after bootstrap or Argo can later reconcile back to older ciphertext from the remote repo.
+
 What happens during apply:
 
 1. Creates k3d cluster and writes kubeconfig (default `~/.kube/config`)

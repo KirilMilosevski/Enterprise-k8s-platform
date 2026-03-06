@@ -51,3 +51,9 @@ variable "apps_root_app_path" {
   default     = "../apps/root/app-of-apps.yaml"
   description = "Path to the ArgoCD APP"
 }
+
+variable "auto_generate_sealed_secrets" {
+  description = "If true, regenerate and apply SealedSecrets after the sealed-secrets controller becomes available. Requires secret env vars in the Terraform shell."
+  type        = bool
+  default     = true
+}

@@ -133,3 +133,57 @@ resource "null_resource" "monitoring_root_app" {
 }
 
 
+resource "null_resource" "regenerate_sealed_secrets" {
+  triggers = {
+    always_run = timestamp()
+    enabled    = tostring(var.auto_generate_sealed_secrets)
+    script     = filesha256("${path.module}/../scripts/generate-sealed-secrets.sh")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOF
+      set -e
+
+      if [ "${var.auto_generate_sealed_secrets}" != "true" ]; then
+        echo "[TF] auto_generate_sealed_secrets=false, skipping sealed secret regeneration."
+        exit 0
+      fi
+
+      missing=""
+      for name in CF_API_TOKEN TUNNEL_TOKEN GRAFANA_ADMIN_PASSWORD; do
+        eval "value=\$${$name-}"
+        if [ -z "$value" ]; then
+          missing="$missing $name"
+        fi
+      done
+
+      if [ -n "$missing" ]; then
+        echo "[TF] Skipping sealed secret regeneration. Missing env vars:$missing"
+        echo "[TF] Export the secret env vars and rerun: terraform apply"
+        exit 0
+      fi
+
+      export KUBECONFIG="${pathexpand(var.kubeconfig_path)}"
+
+      echo "[TF] Waiting for sealed-secrets controller..."
+      kubectl wait --for=condition=available deployment/sealed-secrets -n kube-system --timeout=300s
+
+      echo "[TF] Regenerating SealedSecrets from local env vars..."
+      "${path.module}/../scripts/generate-sealed-secrets.sh"
+
+      echo "[TF] Applying regenerated SealedSecrets to the cluster..."
+      kubectl apply -f "${path.module}/../secrets/cloudflare-api-token.sealedsecret.yaml"
+      kubectl apply -f "${path.module}/../secrets/cloudflared-token.sealedsecret.yaml"
+      kubectl apply -f "${path.module}/../secrets/grafana-admin-credentials.sealedsecret.yaml"
+
+      echo "[TF] Regenerated SealedSecrets applied. Commit and push the updated files so Argo's Git source matches the cluster."
+    EOF
+  }
+
+  depends_on = [
+    null_resource.apps_root_app,
+    null_resource.monitoring_root_app
+  ]
+}
+
+
