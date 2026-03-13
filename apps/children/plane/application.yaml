@@ -34,9 +34,6 @@ spec:
           minio:
             storageClass: local-path
 
-    - repoURL: https://github.com/KirilMilosevski/Enterprise-k8s-platform.git
-      targetRevision: main
-      path: plane-overrides
 
   destination:
     server: https://kubernetes.default.svc
