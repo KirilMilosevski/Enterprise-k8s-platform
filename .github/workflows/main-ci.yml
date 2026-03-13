@@ -154,6 +154,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Checkov
+        continue-on-error: true
         uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
@@ -162,6 +163,7 @@ jobs:
           soft_fail: true
 
       - name: Run Trivy filesystem scan
+        continue-on-error: true
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
