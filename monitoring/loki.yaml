@@ -12,10 +12,10 @@ spec:
     helm:
       values: |
         deploymentMode: SingleBinary
-        
+
         singleBinary:
           replicas: 1
-        
+
         backend:
           replicas: 0
         read:
@@ -62,4 +62,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-

@@ -5,7 +5,7 @@ metadata:
   namespace: plane
 spec:
   secretName: kiril-shop-wildcard-tls
-  issuerRef: 
+  issuerRef:
     name: letsencrypt-cloudflare-staging
     kind: ClusterIssuer
   dnsNames:

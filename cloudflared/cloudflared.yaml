@@ -28,4 +28,3 @@ spec:
                 secretKeyRef:
                   name: cloudflared-token
                   key: TUNNEL_TOKEN
-
