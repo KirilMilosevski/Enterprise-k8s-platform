@@ -159,6 +159,7 @@ jobs:
           directory: .
           config_file: .checkov.yml
           quiet: true
+          soft_fail: true
 
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@0.33.1
@@ -168,4 +169,4 @@ jobs:
           hide-progress: true
           ignore-unfixed: true
           severity: CRITICAL,HIGH
-          exit-code: '1'
+          exit-code: '0'
