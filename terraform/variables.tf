@@ -24,7 +24,7 @@ variable "k3d_version" {
 
 variable "kubeconfig_path" {
   type    = string
-  default = "~/.kube/config"
+  default = "~/.kube/config-homelab"
 }
 
 

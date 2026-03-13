@@ -1,5 +1,4 @@
 output "kubeconfig" {
-  description = "Kubeconfig for the cluster"
-  value       = "k3d_cluster.homelab.kubeconfig[0].raw_kubeconfig"
-  sensitive   = true
+  description = "Path to the generated kubeconfig for the homelab cluster"
+  value       = pathexpand(var.kubeconfig_path)
 }
