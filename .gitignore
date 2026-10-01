@@ -34,3 +34,9 @@ secrets/*.dec.yaml
 secrets/*.decrypted.yaml
 secrets/*.plain.yaml
 secrets/*.local.yaml
+
+# Sealed Secrets CLI binary (install via brew/docs, do not commit)
+kubeseal
+**/kubeseal
+.tools/
+_portfolio_polish/

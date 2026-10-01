@@ -1,11 +1,21 @@
-# Platform for Plane (GitOps, Observability, CI/CD)
+# Enterprise Kubernetes Platform (GitOps Homelab)
 
-This directory defines a full homelab Kubernetes environment for running **Plane CE** with GitOps, TLS, ingress, Cloudflare tunnel access, and observability.
+[![Main CI](https://github.com/KirilMilosevski/Enterprise-k8s-platform/actions/workflows/main-ci.yml/badge.svg)](https://github.com/KirilMilosevski/Enterprise-k8s-platform/actions/workflows/main-ci.yml)
 
-It combines:
-- `Terraform` for Day-0 bootstrap (k3d cluster + Argo CD install + root app apply)
-- `Argo CD` for Day-1/2 continuous reconciliation of platform and app manifests
-- `Helm via Argo CD` for core platform components (Traefik, cert-manager, Sealed Secrets, monitoring stack, Plane)
+**60-second overview:** A production-style Kubernetes platform on k3d — Terraform bootstraps the cluster and Argo CD; Git is the source of truth for Traefik, cert-manager, Sealed Secrets, Plane CE, and a Prometheus/Grafana/Loki stack. Public access goes through a Cloudflare tunnel. Secrets are sealed in Git (never plaintext). CI runs yamllint, Terraform validate, Gitleaks, Checkov, and Trivy (HIGH/CRITICAL fail the build).
+
+This is the active showcase repo. The older [Homelab](https://github.com/KirilMilosevski/Homelab) lab is archived.
+
+```mermaid
+flowchart LR
+  user[User] --> cf[Cloudflare_DNS_Tunnel]
+  cf --> traefik[Traefik]
+  traefik --> plane[Plane_CE]
+  traefik --> argocd[Argo_CD]
+  tf[Terraform_Day0] --> cluster[k3d]
+  tf --> argocd
+  argocd --> apps[Helm_apps_monitoring]
+```
 
 ## What This Deploys
 
@@ -97,7 +107,7 @@ Install locally:
 - `terraform`
 - `helm` (Terraform Helm provider installs charts, but Helm CLI is useful for debugging)
 - `argocd` CLI (optional, but useful)
-- `kubeseal` (required when rotating sealed secrets)
+- `kubeseal` (required when rotating sealed secrets; install via `brew install kubeseal` — do not commit the binary)
 
 External prerequisites:
 
@@ -362,6 +372,6 @@ This triggers k3d cluster deletion via Terraform `local-exec` destroy provisione
 
 ## Project Status
 
-- CI/CD pipeline work is currently in progress.
-- Observability has been added (Prometheus, Grafana, Loki, and Promtail).
-- Alerting/alarm capabilities are also included through the monitoring stack.
+- GitOps platform bootstrap via Terraform + Argo CD is in place.
+- Observability: Prometheus, Grafana, Loki, Promtail.
+- CI: lint, Terraform validate, Gitleaks, Checkov, Trivy (HIGH/CRITICAL gate).
