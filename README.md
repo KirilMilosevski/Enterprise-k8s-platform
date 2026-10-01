@@ -1,8 +1,10 @@
-# Enterprise Kubernetes Platform (GitOps Homelab)
+# Enterprise Kubernetes Platform
 
 [![Main CI](https://github.com/KirilMilosevski/Enterprise-k8s-platform/actions/workflows/main-ci.yml/badge.svg)](https://github.com/KirilMilosevski/Enterprise-k8s-platform/actions/workflows/main-ci.yml)
 
 **60-second overview:** A production-style Kubernetes platform on k3d — Terraform bootstraps the cluster and Argo CD; Git is the source of truth for Traefik, cert-manager, Sealed Secrets, Plane CE, and a Prometheus/Grafana/Loki stack. Public access goes through a Cloudflare tunnel. Secrets are sealed in Git (never plaintext). CI runs yamllint, Terraform validate, Gitleaks, Checkov, and Trivy (HIGH/CRITICAL fail the build).
+
+Portfolio: https://kirilmilosevski.github.io/kiril-cv-landing/
 
 This is the active showcase repo. The older [Homelab](https://github.com/KirilMilosevski/Homelab) lab is archived.
 
