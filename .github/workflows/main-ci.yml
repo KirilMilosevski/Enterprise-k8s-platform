@@ -160,7 +160,7 @@ jobs:
           config_file: .checkov.yml
           quiet: true
           soft_fail: false
-          fail_on: HIGH
+          hard_fail_on: HIGH
 
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@v0.36.0
