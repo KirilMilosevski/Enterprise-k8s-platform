@@ -1,1 +1,9 @@
 soft-fail: false
+
+# SealedSecret ciphertext is high-entropy by design — not plaintext secrets.
+skip-check:
+  - CKV_SECRET_6
+  # Tag pinning is enforced in manifests; digest pins are optional for this lab.
+  - CKV_K8S_43
+  # cloudflared requires the tunnel token as a CLI flag / env var.
+  - CKV_K8S_35
